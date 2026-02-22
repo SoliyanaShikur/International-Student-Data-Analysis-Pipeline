@@ -1,0 +1,165 @@
+/**
+ * index.css — EduScope Terminal Design System
+ *
+ * ╔══════════════════════════════════════════════════════════╗
+ * ║  DESIGN PHILOSOPHY: Bloomberg Terminal for Education     ║
+ * ║  ─────────────────────────────────────────────────────── ║
+ * ║  • Very dark backgrounds (#070d12 base)                  ║
+ * ║  • Cyan/amber accent duopoly                             ║
+ * ║  • Monospaced fonts throughout                           ║
+ * ║  • Crisp 1px borders — no rounded corners               ║
+ * ║  • Scanline grid textures for atmosphere                  ║
+ * ╚══════════════════════════════════════════════════════════╝
+ *
+ * We import "IBM Plex Mono" for that authentic terminal feel.
+ * It's readable at small sizes and unmistakably financial.
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;600;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── CSS Custom Properties (Design Tokens) ───────────────────────────────── */
+:root {
+  /* Core backgrounds */
+  --color-bg: #070d12;           /* deepest background */
+  --color-topbar: #070d12;       /* top bar matches bg */
+  --color-sidebar: #080f15;      /* sidebar: slightly lighter */
+  --color-card: #0c1820;         /* card surface */
+  --color-card-highlight: #0f2030; /* selected state card */
+
+  /* Accent colors */
+  --color-accent: #00b4d8;       /* cyan — primary interactive */
+  --color-accent-amber: #f59e0b; /* amber — "hidden gem" / selected */
+  --color-border: #1e3a4a;       /* border color */
+
+  /* Text */
+  --color-text: #c9d6e0;         /* default text */
+}
+
+/* ── Base Reset ──────────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: 'IBM Plex Mono', 'Courier New', monospace;
+  /* Subtle scan-line texture using CSS gradient */
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 180, 216, 0.012) 2px,
+    rgba(0, 180, 216, 0.012) 4px
+  );
+}
+
+/* ── Tailwind Custom Color Mapping ───────────────────────────────────────── */
+/* These map CSS variables to Tailwind utility classes.
+   In tailwind.config.js we register these as custom colors:
+   bg-terminal-bg, text-terminal-accent, etc. */
+
+/* ── Range Slider — Custom terminal styling ──────────────────────────────── */
+/* Native range inputs are notoriously hard to style cross-browser.
+   We use ::-webkit-slider-* for Chrome/Edge and ::-moz-range-* for Firefox. */
+
+.terminal-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 2px;
+  background: var(--color-border);
+  outline: none;
+  cursor: pointer;
+}
+
+/* Filled track (the part to the left of the thumb) — CSS-only trick:
+   Uses a gradient from accent → border to simulate fill */
+.terminal-slider::-webkit-slider-runnable-track {
+  height: 2px;
+  background: linear-gradient(
+    to right,
+    var(--color-accent) 0%,
+    var(--color-accent) var(--pct, 50%),
+    var(--color-border) var(--pct, 50%)
+  );
+}
+
+/* Chrome/Safari thumb */
+.terminal-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  background: var(--color-accent);
+  border: 2px solid var(--color-bg);
+  cursor: pointer;
+  margin-top: -5px; /* vertically center on track */
+  /* Square (not circle) — terminal aesthetic */
+  border-radius: 0;
+  transition: background 0.15s;
+}
+
+.terminal-slider::-webkit-slider-thumb:hover {
+  background: var(--color-accent-amber);
+}
+
+/* Firefox thumb */
+.terminal-slider::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  background: var(--color-accent);
+  border: 2px solid var(--color-bg);
+  border-radius: 0;
+  cursor: pointer;
+}
+
+.terminal-slider::-moz-range-track {
+  height: 2px;
+  background: var(--color-border);
+}
+
+/* Firefox fill track */
+.terminal-slider::-moz-range-progress {
+  height: 2px;
+  background: var(--color-accent);
+}
+
+/* ── Scrollbar — terminal dark styling ───────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-accent);
+}
+
+/* ── D3 axis styling overrides ───────────────────────────────────────────── */
+/* D3 injects SVG directly; we can't use Tailwind classes on those elements */
+.tick text {
+  font-family: 'IBM Plex Mono', monospace !important;
+  font-size: 10px;
+}
+
+/* ── Utility: hide default focus outline, show custom ───────────────────── */
+button:focus-visible {
+  outline: 1px solid var(--color-accent);
+  outline-offset: 2px;
+}
