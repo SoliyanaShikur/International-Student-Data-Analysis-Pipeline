@@ -65,8 +65,19 @@ export default function App() {
       overflow: "hidden"
     }}>
 
-      <TopBar filteredCount={filteredData.length} totalCount={allData.length}
-        activeView={activeView} onViewChange={setActiveView} />
+      <TopBar
+        filteredCount={filteredData.length}
+        totalCount={allData.length}
+        activeView={activeView}
+        onViewChange={setActiveView}
+        activeFilterCount={
+          (filters.maxTuition < 80000 ? 1 : 0) +
+          (filters.minIntl > 0 ? 1 : 0) +
+          (filters.minEnrollment > 0 ? 1 : 0) +
+          (filters.maxAdmissionRate < 100 ? 1 : 0) +
+          (filters.highRoiOnly ? 1 : 0)
+        }
+      />
 
       <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
         {/* Filter sidebar */}
