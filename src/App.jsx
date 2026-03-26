@@ -1,4 +1,19 @@
+/**
+ * App.jsx — Root with simple client-side routing
+ *
+ * Pages:
+ *   "home"      → LandingPage
+ *   "dashboard" → Dashboard (map, scatter, filters, drilldown)
+ *   "contact"   → ContactPage
+ *
+ * No React Router needed — simple useState page switcher.
+ * URL hash is updated so browser back button works.
+ */
+
 import { useState, useEffect, useCallback } from "react";
+import { useTheme } from "./theme";
+import LandingPage from "./components/LandingPage";
+import ContactPage from "./components/ContactPage";
 import TopBar from "./components/TopBar";
 import FilterSidebar from "./components/FilterSidebar";
 import ChoroplethMap from "./components/ChoroplethMap";
@@ -8,7 +23,8 @@ import { computeValueScore } from "./utils/valueScore";
 
 const API_BASE = "http://127.0.0.1:5001/api/colleges";
 
-export default function App() {
+// ── Dashboard component (extracted so LandingPage stays clean) ────────────────
+function Dashboard({ onNavigate }) {
   const [allData, setAllData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -58,33 +74,31 @@ export default function App() {
     return acc;
   }, {});
 
-  return (
-    <div style={{
-      height: "100vh", display: "flex", flexDirection: "column",
-      background: "#070d12", color: "#c9d6e0", fontFamily: "'IBM Plex Mono', monospace",
-      overflow: "hidden"
-    }}>
+  const activeFilterCount =
+    (filters.maxTuition < 80000 ? 1 : 0) +
+    (filters.minIntl > 0 ? 1 : 0) +
+    (filters.minEnrollment > 0 ? 1 : 0) +
+    (filters.maxAdmissionRate < 100 ? 1 : 0) +
+    (filters.highRoiOnly ? 1 : 0);
 
+  const { t } = useTheme();
+
+  return (
+    <div style={{ height: "100vh", display: "flex", flexDirection: "column", background: t.bg, color: t.text, fontFamily: "'IBM Plex Mono', monospace", overflow: "hidden" }}>
+
+      {/* TopBar with home button */}
       <TopBar
         filteredCount={filteredData.length}
         totalCount={allData.length}
         activeView={activeView}
         onViewChange={setActiveView}
-        activeFilterCount={
-          (filters.maxTuition < 80000 ? 1 : 0) +
-          (filters.minIntl > 0 ? 1 : 0) +
-          (filters.minEnrollment > 0 ? 1 : 0) +
-          (filters.maxAdmissionRate < 100 ? 1 : 0) +
-          (filters.highRoiOnly ? 1 : 0)
-        }
+        activeFilterCount={activeFilterCount}
+        onHome={() => onNavigate("home")}
       />
 
       <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
         {/* Filter sidebar */}
-        <div style={{
-          width: "260px", flexShrink: 0, borderRight: "1px solid #1e3a4a",
-          overflowY: "auto", background: "#080f15"
-        }}>
+        <div style={{ width: "260px", flexShrink: 0, borderRight: `1px solid ${t.border}`, overflowY: "auto", background: t.bgSidebar }}>
           <FilterSidebar
             filters={filters}
             onFilterChange={(k, v) => setFilters(p => ({ ...p, [k]: v }))}
@@ -95,17 +109,13 @@ export default function App() {
 
         {/* Main content */}
         <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
-          {/* Top row: visualization + drilldown */}
           <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
-            {/* Map or Scatter — 65% */}
-            <div style={{ flex: "0 0 65%", borderRight: "1px solid #1e3a4a", overflow: "hidden" }}>
+            {/* Viz — 65% */}
+            <div style={{ flex: "0 0 65%", borderRight: `1px solid ${t.border}`, overflow: "hidden" }}>
               {activeView === "map"
-                ? <ChoroplethMap stateAggregates={stateAggregates}
-                  selectedState={selectedState}
-                  onStateClick={s => { setSelectedState(s); setSelectedSchool(null); }}
-                  loading={loading} />
-                : <ScatterPlot data={filteredData} selectedState={selectedState}
-                  onSchoolClick={setSelectedSchool} />}
+                ? <ChoroplethMap stateAggregates={stateAggregates} selectedState={selectedState}
+                    onStateClick={s => { setSelectedState(s); setSelectedSchool(null); }} loading={loading} />
+                : <ScatterPlot data={filteredData} selectedState={selectedState} onSchoolClick={setSelectedSchool} />}
             </div>
             {/* Drill-down — 35% */}
             <div style={{ flex: "0 0 35%", overflow: "hidden" }}>
@@ -118,13 +128,41 @@ export default function App() {
       </div>
 
       {error && (
-        <div style={{
-          position: "fixed", bottom: 16, right: 16, background: "#1a0a0a",
-          border: "1px solid #dc2626", color: "#fca5a5", padding: "12px 16px", fontSize: 12
-        }}>
+        <div style={{ position: "fixed", bottom: 16, right: 16, background: "#1a0a0a", border: "1px solid #dc2626", color: "#fca5a5", padding: "12px 16px", fontSize: "12px", fontFamily: "monospace" }}>
           ⚠ {error} — Is Flask running on port 5001?
         </div>
       )}
     </div>
   );
+}
+
+// ── Root router ───────────────────────────────────────────────────────────────
+export default function App() {
+  // Read initial page from hash
+  const getInitialPage = () => {
+    const hash = window.location.hash.replace("#", "");
+    return ["home", "dashboard", "contact"].includes(hash) ? hash : "home";
+  };
+
+  const [page, setPage] = useState(getInitialPage);
+
+  const navigate = useCallback((target) => {
+    setPage(target);
+    window.location.hash = target;
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
+
+  // Handle browser back/forward
+  useEffect(() => {
+    const handler = () => {
+      const hash = window.location.hash.replace("#", "");
+      if (["home", "dashboard", "contact"].includes(hash)) setPage(hash);
+    };
+    window.addEventListener("hashchange", handler);
+    return () => window.removeEventListener("hashchange", handler);
+  }, []);
+
+  if (page === "home") return <LandingPage onNavigate={navigate} />;
+  if (page === "contact") return <ContactPage onNavigate={navigate} />;
+  return <Dashboard onNavigate={navigate} />;
 }
