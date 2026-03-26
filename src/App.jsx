@@ -21,7 +21,7 @@ import ScatterPlot from "./components/ScatterPlot";
 import DrillDownPanel from "./components/DrillDownPanel";
 import { computeValueScore } from "./utils/valueScore";
 
-const API_BASE = "http://127.0.0.1:5001/api/colleges";
+const API_BASE = "https://eduscope-api.azurewebsites.net";
 
 // ── Dashboard component (extracted so LandingPage stays clean) ────────────────
 function Dashboard({ onNavigate }) {
