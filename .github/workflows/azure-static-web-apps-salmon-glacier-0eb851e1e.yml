@@ -40,8 +40,8 @@ jobs:
          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_SALMON_GLACIER_0EB851E1E }}
          action: upload
          app_location: '/'
-         api_location: 'swa-db-connections'
-         output_location: ''
+         api_location: ''
+         output_location: 'dist'
         
           ###### End of Repository/Build Configurations ######
 
