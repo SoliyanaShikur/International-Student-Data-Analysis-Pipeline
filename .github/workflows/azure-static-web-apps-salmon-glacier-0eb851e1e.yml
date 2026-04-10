@@ -26,12 +26,12 @@ jobs:
      - name: Setup Node.js
        uses: actions/setup-node@v3
        with:
-         node-version: '20' # Matching your local development environment
+         node-version: '20'
          cache: 'npm'
 
      - name: Install & Build
        run: |
-         npm install
+         npm ci --prefer-offline --no-audit
          npm run build
 
      - name: Build And Deploy
