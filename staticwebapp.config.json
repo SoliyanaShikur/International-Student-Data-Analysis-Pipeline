@@ -1,0 +1,14 @@
+{
+  "mimeTypes": {
+    ".js": "application/javascript",
+    ".jsx": "application/javascript",
+    ".mjs": "application/javascript",
+    ".css": "text/css",
+    ".json": "application/json",
+    ".wasm": "application/wasm"
+  },
+  "navigationFallback": {
+    "rewrite": "/index.html",
+    "exclude": ["/assets/*", "/*.js", "/*.css", "/*.json"]
+  }
+}
