@@ -1,7 +1,6 @@
 {
   "mimeTypes": {
     ".js": "application/javascript",
-    ".jsx": "application/javascript",
     ".mjs": "application/javascript",
     ".css": "text/css",
     ".json": "application/json",
@@ -9,6 +8,6 @@
   },
   "navigationFallback": {
     "rewrite": "/index.html",
-    "exclude": ["/assets/**", "/*.js", "/*.mjs", "/*.css", "/*.json", "/*.png", "/*.ico"]
+    "exclude": ["/assets/*", "/*.js", "/*.mjs", "/*.css", "/*.json", "/*.png", "/*.ico"]
   }
 }
