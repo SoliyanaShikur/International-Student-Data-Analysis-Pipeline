@@ -26,6 +26,7 @@ jobs:
           npm install --include=dev
           chmod +x ./node_modules/.bin/vite
           npm run build
+          cp public/staticwebapp.config.json dist/staticwebapp.config.json
       - name: Deploy to Azure Static Web Apps
         uses: Azure/static-web-apps-deploy@v1
         with:
