@@ -21,7 +21,7 @@ import ScatterPlot from "./components/ScatterPlot";
 import DrillDownPanel from "./components/DrillDownPanel";
 import { computeValueScore } from "./utils/valueScore";
 
-const API_BASE = "https://international-student-data-analysis.onrender.com";
+const API_BASE = "https://international-student-data-analysis.onrender.com/api/colleges";
 
 // ── Dashboard component (extracted so LandingPage stays clean) ────────────────
 function Dashboard({ onNavigate }) {

@@ -9,7 +9,10 @@ import requests as http_requests
 import math
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, origins=[
+    "https://orange-water-0151fee0f.1.azurestaticapps.net",
+    "http://localhost:5173"
+])
 
 MONGO_URI = os.environ.get(
     "MONGO_URI",
