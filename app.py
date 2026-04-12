@@ -1,5 +1,6 @@
 import sys
 import os
+import certifi
 sys.stdout.reconfigure(encoding='utf-8')
 
 from flask import Flask, jsonify, request
@@ -20,7 +21,7 @@ MONGO_URI = os.environ.get(
 )
 ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
 
-mongo_client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=10000)
+mongo_client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=10000, tlsCAFile=certifi.where())
 db = mongo_client["college_db"]
 colleges_col = db["colleges"]
 
