@@ -22,7 +22,7 @@ import DrillDownPanel from "./components/DrillDownPanel";
 import { computeValueScore } from "./utils/valueScore";
 import TutorialOverlay from "./components/TutorialOverlay";
 
-const API_BASE = import.meta.env.VITE_API_BASE || "https://international-student-data-analysis.onrender.com/api/colleges";
+const API_BASE = import.meta.env.VITE_API_BASE;
 // ── Dashboard component (extracted so LandingPage stays clean) ────────────────
 function Dashboard({ onNavigate }) {
   const [allData, setAllData] = useState([]);
