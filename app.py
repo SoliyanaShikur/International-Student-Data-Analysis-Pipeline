@@ -15,10 +15,7 @@ CORS(app, origins=[
     "http://localhost:5173"
 ])
 
-MONGO_URI = os.environ.get(
-    "MONGO_URI",
-    "mongodb+srv://soliyanashikur_db_user:5hjnJiOjJ7J9DbOU@isss-data-cluster.gupa1mk.mongodb.net/"
-)
+MONGO_URI = os.environ.get("MONGO_URI")
 ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
 
 mongo_client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=10000, tlsCAFile=certifi.where())

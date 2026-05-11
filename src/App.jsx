@@ -20,9 +20,9 @@ import ChoroplethMap from "./components/ChoroplethMap";
 import ScatterPlot from "./components/ScatterPlot";
 import DrillDownPanel from "./components/DrillDownPanel";
 import { computeValueScore } from "./utils/valueScore";
+import TutorialOverlay from "./components/TutorialOverlay";
 
-const API_BASE = "https://international-student-data-analysis.onrender.com/api/colleges";
-
+const API_BASE = import.meta.env.VITE_API_BASE || "https://international-student-data-analysis.onrender.com/api/colleges";
 // ── Dashboard component (extracted so LandingPage stays clean) ────────────────
 function Dashboard({ onNavigate }) {
   const [allData, setAllData] = useState([]);
@@ -36,6 +36,17 @@ function Dashboard({ onNavigate }) {
   const [selectedState, setSelectedState] = useState(null);
   const [selectedSchool, setSelectedSchool] = useState(null);
   const [activeView, setActiveView] = useState("map");
+
+  const [showTutorial, setShowTutorial] = useState(() => {
+    try { return !localStorage.getItem("eduscope_tutorial_done"); }
+    catch { return true; }
+  });
+ 
+  const closeTutorial = () => {
+    setShowTutorial(false);
+    try { localStorage.setItem("eduscope_tutorial_done", "1"); } catch {}
+  };
+
 
   useEffect(() => {
     fetch(`${API_BASE}?max_tuition=80000&min_intl=0&min_enrollment=0`)
@@ -94,6 +105,7 @@ function Dashboard({ onNavigate }) {
         onViewChange={setActiveView}
         activeFilterCount={activeFilterCount}
         onHome={() => onNavigate("home")}
+        onTutorial={() => setShowTutorial(true)}
       />
 
       <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
@@ -130,8 +142,10 @@ function Dashboard({ onNavigate }) {
       {error && (
         <div style={{ position: "fixed", bottom: 16, right: 16, background: "#1a0a0a", border: "1px solid #dc2626", color: "#fca5a5", padding: "12px 16px", fontSize: "12px", fontFamily: "monospace" }}>
           ⚠ {error} — Is Flask running on port 5001?
+
         </div>
       )}
+       {showTutorial && <TutorialOverlay onClose={closeTutorial} />}
     </div>
   );
 }
